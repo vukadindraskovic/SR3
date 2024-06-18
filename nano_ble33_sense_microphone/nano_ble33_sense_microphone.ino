@@ -14,7 +14,7 @@ typedef struct {
 static inference_t inference;
 static signed short sampleBuffer[2048];
 static bool debug_nn = false; // Set this to true to see e.g. features generated from the raw signal
-bool go_recorded = false;
+bool go_recorded = true;
 
 void setup()
 {
@@ -25,19 +25,19 @@ void setup()
     //Serial.println("Edge Impulse Inferencing Demo");
 
     // summary of inferencing settings (from model_metadata.h)
-    ei_printf("Inferencing settings:\n");
-    ei_printf("\tInterval: %.2f ms.\n", (float)EI_CLASSIFIER_INTERVAL_MS);
-    ei_printf("\tFrame size: %d\n", EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE);
-    ei_printf("\tSample length: %d ms.\n", EI_CLASSIFIER_RAW_SAMPLE_COUNT / 16);
-    ei_printf("\tNo. of classes: %d\n", sizeof(ei_classifier_inferencing_categories) / sizeof(ei_classifier_inferencing_categories[0]));
+    // ei_printf("Inferencing settings:\n");
+    // ei_printf("\tInterval: %.2f ms.\n", (float)EI_CLASSIFIER_INTERVAL_MS);
+    // ei_printf("\tFrame size: %d\n", EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE);
+    // ei_printf("\tSample length: %d ms.\n", EI_CLASSIFIER_RAW_SAMPLE_COUNT / 16);
+    // ei_printf("\tNo. of classes: %d\n", sizeof(ei_classifier_inferencing_categories) / sizeof(ei_classifier_inferencing_categories[0]));
 
     if (microphone_inference_start(EI_CLASSIFIER_RAW_SAMPLE_COUNT) == false) {
-        ei_printf("ERR: Could not allocate audio buffer (size %d), this could be due to the window length of your model\r\n", EI_CLASSIFIER_RAW_SAMPLE_COUNT);
+        //ei_printf("ERR: Could not allocate audio buffer (size %d), this could be due to the window length of your model\r\n", EI_CLASSIFIER_RAW_SAMPLE_COUNT);
         return;
     }
 
     while (!BARO.begin()) {
-        ei_printf("Failed to initialize humidity temperature sensor!\n");
+        //ei_printf("Failed to initialize humidity temperature sensor!\n");
     }
 
     pinMode(LEDR, OUTPUT);
@@ -51,15 +51,15 @@ void loop()
 
     delay(2000);
 
-    ei_printf("Recording...\n");
+    //ei_printf("Recording...\n");
 
     bool m = microphone_inference_record();
     if (!m) {
-        ei_printf("ERR: Failed to record audio...\n");
+        //ei_printf("ERR: Failed to record audio...\n");
         return;
     }
 
-    ei_printf("Recording done\n");
+    //ei_printf("Recording done\n");
 
     signal_t signal;
     signal.total_length = EI_CLASSIFIER_RAW_SAMPLE_COUNT;
@@ -68,27 +68,27 @@ void loop()
 
     EI_IMPULSE_ERROR r = run_classifier(&signal, &result, debug_nn);
     if (r != EI_IMPULSE_OK) {
-        ei_printf("ERR: Failed to run classifier (%d)\n", r);
+        //ei_printf("ERR: Failed to run classifier (%d)\n", r);
         return;
     }
 
     // print the predictions
     int prediction_index = get_prediction_index(result.classification);
     if (result.classification[prediction_index].value < 0.5) {
-        ei_printf("Impossible detection of collected data...\n");
+        //ei_printf("Impossible detection of collected data...\n");
     }
     else {
       switch (prediction_index) {
         case 0: 
           go_recorded = true;
-          ei_printf("GO: Collecting data from pin started...\n");
+          //ei_printf("GO: Collecting data from pin started...\n");
           break;
         case 1:
-          ei_printf("NONE: Nothing changes...\n");
+          //ei_printf("NONE: Nothing changes...\n");
           break;
         case 2:
           go_recorded = false;
-          ei_printf("STOP: Collecting data from pin paused...\n");
+          //ei_printf("STOP: Collecting data from pin paused...\n");
           break;
       }
     }
@@ -102,11 +102,11 @@ void loop()
 
     float temp = BARO.readTemperature();
 
-    Serial.print(temp);
+    Serial.println(temp);
 
     float altitude = 4430 * (1 - pow(BARO.readPressure()/101.325, 1/5.255));
 
-    ei_printf("Altitude: %.5f\n", altitude);
+    //ei_printf("Altitude: %.5f\n", altitude);
 
     if (altitude > 18) {
         digitalWrite(LEDR, HIGH);         
@@ -121,7 +121,7 @@ void loop()
     digitalWrite(LEDB, HIGH);
 
 #if EI_CLASSIFIER_HAS_ANOMALY == 1
-    ei_printf("    anomaly score: %.3f\n", result.anomaly);
+    //ei_printf("    anomaly score: %.3f\n", result.anomaly);
 #endif
 }
 

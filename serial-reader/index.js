@@ -1,4 +1,4 @@
-const SerialPort = require("serialport");
+const SerialPort = require('serialport');
 const mqtt = require('mqtt');
 
 const parsers = SerialPort.parsers;
@@ -6,7 +6,8 @@ const parser = new parsers.Readline({
     delimiter:'\r\n'
 });
 
-const mqttAddress = 'tcp://emqx:1883'
+const qos = 2;
+const mqttAddress = 'tcp://localhost:1883'
 const clientId = 'serial-reader'
 const username = 'serial-reader'
 const password = 'serial-reader'
@@ -20,15 +21,19 @@ const mqttClient = mqtt.connect(mqttAddress, {
     reconnectPeriod: 1000
 })
 
-var port = new SerialPort('COM5', { // IZMENA
-    baudRate:115200,
-    dataBits:8,
+const port = new SerialPort('COM5', { 
+    baudRate: 115200,
+    dataBits: 8,
     parity: 'none',
     stopBits: 1,
     flowControl: false
 });
 
 port.pipe(parser);
+
+port.on('open', function () {
+    port.set({ dtr: true, rts: true });
+})
 
 parser.on('data', function(data){
     console.log(data);
@@ -39,4 +44,3 @@ parser.on('data', function(data){
         }
     })
 });
-
