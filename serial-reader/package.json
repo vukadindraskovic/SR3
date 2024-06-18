@@ -1,0 +1,10 @@
+{
+    "name": "basic-socket",
+    "version": "0.0.1",
+    "description": "Sample communication from an HTML document to a NodeJS using socket.io",
+    "main": "index.js",
+    "dependencies": {
+        "mqtt": "^5.7.0",
+        "serialport": "^9.0.1"
+    }
+}
