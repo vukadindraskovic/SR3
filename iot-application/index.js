@@ -10,7 +10,7 @@ const password = 'iot-application'
 const topic = 'serial-reader/data'
 
 const url = 'http://influxdb:8086';
-const token = 'MkoqBU1IRStTweJnx0uM1BfNTDqtId3Rofx-BqARS_HJjdbJzt_DzW0pSyI1vh-7smlN1bKixZNt0s02izfuFA==';
+const token = 'brZmV0HPOUTQhuKpuVDyRIv2u7EDo18748lI8nRASiJlcg69lz0hkwupXop_jTm1EpcZEOWUqWzhwW9lCrpARQ=='; 
 const organization = 'elfak';
 const bucket = 'sr3';
 
