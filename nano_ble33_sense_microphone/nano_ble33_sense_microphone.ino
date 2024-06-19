@@ -37,12 +37,8 @@ void setup()
     }
 
     while (!BARO.begin()) {
-        //ei_printf("Failed to initialize humidity temperature sensor!\n");
+        //ei_printf("Failed to initialize ppressure and temperature sensor!\n");
     }
-
-    pinMode(LEDR, OUTPUT);
-    pinMode(LEDG, OUTPUT);
-    pinMode(LEDB, OUTPUT);
 }
 
 void loop()
@@ -92,33 +88,12 @@ void loop()
           break;
       }
     }
-    
-    if (!go_recorded) {
-        digitalWrite(LEDR, HIGH);         
-        digitalWrite(LEDG, HIGH);        
-        digitalWrite(LEDB, LOW);
-        return;
-    }
 
     float temp = BARO.readTemperature();
+    float pressure = BARO.readPressure();
 
-    Serial.println(temp);
-
-    float altitude = 4430 * (1 - pow(BARO.readPressure()/101.325, 1/5.255));
-
-    //ei_printf("Altitude: %.5f\n", altitude);
-
-    if (altitude > 18) {
-        digitalWrite(LEDR, HIGH);         
-        digitalWrite(LEDG, LOW);        
-        digitalWrite(LEDB, HIGH);
-        return;
-    }
-
-    
-    digitalWrite(LEDR, LOW);         
-    digitalWrite(LEDG, HIGH);        
-    digitalWrite(LEDB, HIGH);
+    String data = String(temp, 2) + ", " + String(pressure, 2);
+    Serial.println(data);
 
 #if EI_CLASSIFIER_HAS_ANOMALY == 1
     //ei_printf("    anomaly score: %.3f\n", result.anomaly);

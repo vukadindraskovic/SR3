@@ -21,7 +21,7 @@ const mqttClient = mqtt.connect(mqttAddress, {
     reconnectPeriod: 1000
 })
 
-const port = new SerialPort('COM5', { 
+const port = new SerialPort('COM7', { 
     baudRate: 115200,
     dataBits: 8,
     parity: 'none',
@@ -37,8 +37,12 @@ port.on('open', function () {
 
 parser.on('data', function(data){
     console.log(data);
-    const temp = parseFloat(data);
-    mqttClient.publish(topic, JSON.stringify(temp), { qos }, error => {
+    const values = data.split(", ").map(val => parseFloat(val.trim()));
+    const jsonObject = {
+        temperature: values[0],
+        pressure: values[1]
+    }
+    mqttClient.publish(topic, JSON.stringify(jsonObject), { qos }, error => {
         if (error) {
             console.error('ERROR: ', error)
         }

@@ -32,19 +32,24 @@ mqttClient.on('connect', () => {
 })
 
 mqttClient.on('message', (topic, payload) => {
-    const json = JSON.parse(payload.toString())
+    const json = JSON.parse(payload)
     console.log(`Received Message from '${topic}': `, json)
     
-    const point = new Point('temperature-measurement')
-      .floatField('value', parseFloat(json))
+    const point = new Point('sensor-measurement')
+      .floatField('temperature', json.temperature)
+      .floatField('pressure', json.pressure)
       .timestamp(new Date());
   
     writeApi.writePoint(point);
     writeApi.flush();
+
+    // neki poziv ML
+
+    // emit na socket
 })
 
 process.on('exit', () => {
-    writeApi.close().then(() => {
-      console.log('WRITE API closed');
-    });
+  writeApi.close().then(() => {
+    console.log('WRITE API closed');
   });
+});
